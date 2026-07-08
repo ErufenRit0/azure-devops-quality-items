@@ -1,0 +1,63 @@
+{
+  "manifestVersion": 1,
+  "id": "quality-items",
+  "name": "Quality Items",
+  "version": "0.1.0",
+  "publisher": "YOUR-PUBLISHER-ID",
+  "targets": [
+    { "id": "Microsoft.VisualStudio.Services" }
+  ],
+  "description": "Track, classify and analyze quality issues as first-class Azure DevOps work items, with optional AI-assisted classification and root cause suggestions.",
+  "public": false,
+  "categories": ["Azure Boards"],
+  "tags": ["quality", "work item", "root cause analysis", "AI", "backlog"],
+  "icons": {
+    "default": "images/extension-icon.png"
+  },
+  "content": {
+    "details": { "path": "README.md" },
+    "license": { "path": "LICENSE" }
+  },
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/YOUR-GITHUB-ORG/azure-devops-quality-items"
+  },
+  "links": {
+    "home": { "uri": "https://github.com/YOUR-GITHUB-ORG/azure-devops-quality-items" },
+    "getstarted": { "uri": "https://github.com/YOUR-GITHUB-ORG/azure-devops-quality-items#readme" },
+    "issues": { "uri": "https://github.com/YOUR-GITHUB-ORG/azure-devops-quality-items/issues" }
+  },
+  "scopes": [
+    "vso.work",
+    "vso.work_write"
+  ],
+  "files": [
+    { "path": "dist", "addressable": true },
+    { "path": "images", "addressable": true }
+  ],
+  "contributions": [
+    {
+      "id": "quality-item-form-group",
+      "type": "ms.vss-work-web.work-item-form-group",
+      "description": "Adds a Quality Details panel (Severity, Quality Category, Root Cause, AI assist) to the Quality Item work item form.",
+      "targets": ["ms.vss-work-web.work-item-form"],
+      "properties": {
+        "name": "Quality Details",
+        "uri": "dist/form-group/quality-item-panel.html",
+        "height": 300,
+        "workItemTypes": ["YOUR-PROCESS-NAME.QualityItem"]
+      }
+    },
+    {
+      "id": "quality-items-hub",
+      "type": "ms.vss-web.hub",
+      "description": "Backlog-style hub listing all Quality Items in the current project.",
+      "targets": ["ms.vss-work-web.work-hub-group"],
+      "properties": {
+        "name": "Quality Items",
+        "order": 31,
+        "uri": "dist/hub/quality-items-hub.html"
+      }
+    }
+  ]
+}
