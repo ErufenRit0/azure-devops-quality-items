@@ -1,0 +1,36 @@
+{
+  "name": "Quality Item",
+  "description": "Tracks a quality issue (defect, inconsistency, or improvement opportunity) with structured classification for root cause analysis and reporting.",
+  "icon": "icon_test_case",
+  "color": "b51fea",
+  "states": [
+    { "name": "New", "category": "Proposed" },
+    { "name": "Active", "category": "InProgress" },
+    { "name": "Resolved", "category": "Resolved" },
+    { "name": "Closed", "category": "Completed" }
+  ],
+  "fields": [
+    {
+      "referenceName": "Custom.Severity",
+      "name": "Severity",
+      "type": "string",
+      "picklist": ["1 - Critical", "2 - High", "3 - Medium", "4 - Low"],
+      "required": true,
+      "defaultValue": "3 - Medium"
+    },
+    {
+      "referenceName": "Custom.QualityCategory",
+      "name": "Quality Category",
+      "type": "string",
+      "picklist": ["Functional", "Performance", "Security", "Usability", "Documentation", "Compliance"],
+      "required": true
+    },
+    {
+      "referenceName": "Custom.RootCause",
+      "name": "Root Cause",
+      "type": "string",
+      "picklist": ["Requirement Gap", "Design Flaw", "Code Defect", "Test Gap", "Process Issue", "Environment/Infrastructure", "Other"],
+      "required": false
+    }
+  ]
+}

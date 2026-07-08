@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.vsix
+*.log
+npm-debug.log*
+.DS_Store
+.vscode/
