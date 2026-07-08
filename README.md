@@ -2,7 +2,7 @@
 
 An open-source Azure DevOps extension that introduces **Quality Item** as a first-class work item type for tracking quality issues (defects, inconsistencies, improvement opportunities) alongside Bugs and Tasks - with structured classification (Severity, Quality Category, Root Cause) and optional AI-assisted classification.
 
-> Status: early scaffold. Core pieces (manifest, work item type provisioning, form panel, hub) are in place; the AI backend and marketplace icon still need to be wired up before a real release. See "Before you publish" below.
+> Status: early scaffold. Core pieces (manifest, work item type provisioning, form panel, hub, AI backend) are in place; the marketplace icon still needs to be replaced and everything needs testing against a real org before a real release. See "Before you publish" below.
 
 ## Features
 
@@ -12,7 +12,7 @@ An open-source Azure DevOps extension that introduces **Quality Item** as a firs
   - `Root Cause` - `Requirement Gap` / `Design Flaw` / `Code Defect` / `Test Gap` / `Process Issue` / `Environment/Infrastructure` / `Other`
 - **Work item form panel** ("Quality Details") to view/edit these fields directly on the work item form.
 - **Quality Items hub** - a backlog-style list of all Quality Items in the current project.
-- **AI-assisted classification** (optional) - a "Suggest classification with AI" button that calls a server-side endpoint you configure, which in turn can call an LLM API (e.g. the Claude API) to suggest a Quality Category and Root Cause from the work item's title/description.
+- **AI-assisted classification** (optional) - a "Suggest classification with AI" button that calls a small self-hosted backend ([`backend/`](backend/)), which calls the Claude API server-side to suggest a Quality Category, Root Cause and summary from the work item's title/description.
 
 ## Why there's no WIT XML file
 
@@ -30,9 +30,10 @@ vss-extension.json                        Extension manifest (publisher placehol
 process/quality-item-work-item-type.json  Declarative WIT/field/picklist definition
 scripts/provision-quality-item-type.ps1   Provisions the WIT in an Azure DevOps org via REST API
 src/common/fields.ts                      Field reference names + picklist values (keep in sync with the JSON above)
-src/common/ai-service.ts                  Client for the (self-hosted) AI classification backend
+src/common/ai-service.ts                  Client for the AI classification backend (see backend/)
 src/form-group/                           "Quality Details" work item form panel contribution
 src/hub/                                  "Quality Items" backlog hub contribution
+backend/                                  Azure Function that proxies AI classification requests to the Claude API
 .github/workflows/ci.yml                  Install, lint, build, package (.vsix) on every push/PR
 ```
 
@@ -97,17 +98,13 @@ npx tfx-cli extension publish --manifest-globs vss-extension.json --token <marke
 - [ ] Replace `YOUR-PROCESS-NAME.QualityItem` with the real work item type reference name (step 3 above).
 - [ ] Replace `images/extension-icon.png` with a real 128x128 PNG icon (it's currently a text placeholder so the packaging step has something to bundle).
 - [ ] Set `"public": true` in `vss-extension.json` once you're ready for a public Marketplace listing.
-- [ ] Configure `AI_BACKEND_URL` in `src/common/ai-service.ts` (or leave the AI feature disabled).
+- [ ] Deploy [`backend/`](backend/) and set `AI_BACKEND_URL` in `src/common/ai-service.ts` (or leave the AI feature disabled).
 
 ## AI-assisted classification: architecture note
 
-The form panel's "Suggest classification with AI" button calls `classifyQualityItem()` in `src/common/ai-service.ts`, which does a `fetch` to a configurable `AI_BACKEND_URL`. **This extension never calls an LLM API directly from the browser** - that would leak your API key to every user who opens a work item. You need to stand up a small backend (e.g. an Azure Function) that:
+The form panel's "Suggest classification with AI" button calls `classifyQualityItem()` in `src/common/ai-service.ts`, which does a `fetch` to a configurable `AI_BACKEND_URL`. **This extension never calls an LLM API directly from the browser** - that would leak your API key to every user who opens a work item.
 
-1. Accepts `{ title, description }`.
-2. Calls the LLM API (e.g. the Claude API) server-side with your API key.
-3. Returns `{ suggestedQualityCategory, suggestedRootCause, summary, confidence }`.
-
-That backend is intentionally out of scope for this repo's initial scaffold.
+[`backend/`](backend/) is that server-side piece: an Azure Function that accepts `{ title, description }`, calls the Claude API server-side with your API key (from an app setting, never committed), and returns `{ suggestedQualityCategory, suggestedRootCause, summary, confidence }`. See [`backend/README.md`](backend/README.md) for local dev and deployment instructions. It's a separate npm package from the extension (`backend/package.json`) since it deploys independently.
 
 ## Development
 
@@ -115,7 +112,7 @@ This project is developed with AI assistance (Claude Code). See the companion pr
 
 ## Contributing
 
-Issues and pull requests are welcome. Please keep `src/common/fields.ts` and `process/quality-item-work-item-type.json` in sync if you change field names or picklist values.
+Issues and pull requests are welcome. Please keep `src/common/fields.ts`, `backend/src/functions/classifyQualityItem.ts` and `process/quality-item-work-item-type.json` in sync if you change field names or picklist values.
 
 ## License
 
