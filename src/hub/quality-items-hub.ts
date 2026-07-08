@@ -53,7 +53,7 @@ async function init() {
             ORDER BY [${FIELDS.Severity}] ASC`,
   };
 
-  const queryResult = await client.queryByWiql(wiql, { project: project?.name ?? "" });
+  const queryResult = await client.queryByWiql(wiql, project?.name);
   const ids = queryResult.workItems.map((w) => w.id);
   const items = ids.length > 0 ? await client.getWorkItems(ids, project?.name) : [];
 
