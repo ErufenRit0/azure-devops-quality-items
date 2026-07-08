@@ -96,10 +96,11 @@ async function init() {
     }
   });
 
+  // Note: IWorkItemFormService has no field-change event. Live re-sync across
+  // form reloads (e.g. after Undo) would require registering a separate
+  // ms.vss-work-web.work-item-notification-listener contribution; out of
+  // scope for this scaffold, so values are loaded once on init.
   await loadValues();
-  formService.onFieldChanged(() => {
-    void loadValues();
-  });
 
   SDK.notifyLoadSucceeded();
 }

@@ -1,0 +1,20 @@
+{
+  "name": "quality-items-ai-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Azure Function that proxies AI classification requests from the Quality Items extension to the Claude API.",
+  "main": "dist/src/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "func start",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "@azure/functions": "^4.5.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
